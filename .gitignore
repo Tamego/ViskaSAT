@@ -3,3 +3,4 @@ rust/target/
 godot/.godot/
 godot/.import/
 rust/proofs/lean/extraction/.lake/
+.entangled/
