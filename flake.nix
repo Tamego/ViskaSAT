@@ -27,6 +27,7 @@
           packages = with pkgs; [
             godot
             rust-bin.stable.latest.default
+            rust-bin.stable.latest.rust-analyzer
             hax.packages.${system}.default
             elan
             just
