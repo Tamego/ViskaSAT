@@ -1,13 +1,6 @@
-[package]
-name = "rust" # Part of dynamic library name; we use {YourCrate} placeholder.
-version = "0.1.0"     # You can leave version and edition as-is for now.
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib"]  # Compile this crate to a dynamic C library.
-
-[dependencies]
-godot = "0.2.4"
-
-[target."cfg(hax)".dependencies]
-hax-lib = { git = "https://github.com/hacspec/hax", version = "0.3.4" }
+[workspace]
+members = [
+  "godot-rust",
+  "viska-sat"
+]
+resolver = "3"

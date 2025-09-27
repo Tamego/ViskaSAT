@@ -17,7 +17,7 @@ struct ViskaSATExtension;
 unsafe impl ExtensionLibrary for ViskaSATExtension {}
 ```
 
-```{.rust file=rust/src/lib.rs}
+```{.rust file=rust/godot-rust/src/lib.rs}
 <<l_godot-rust-module>>
 
 <<l_gdextension-entry-point>>

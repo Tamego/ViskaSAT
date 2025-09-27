@@ -1,0 +1,7 @@
+[package]
+name = "viska-sat"
+version = "0.1.0"
+edition = "2024"
+
+[target."cfg(hax)".dependencies]
+hax-lib = { git = "https://github.com/hacspec/hax", version = "0.3.4" }
