@@ -3,6 +3,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
+    hax.url = "github:hacspec/hax";
   };
 
   outputs =
@@ -10,6 +11,7 @@
       nixpkgs,
       flake-utils,
       rust-overlay,
+      hax,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -25,6 +27,9 @@
           packages = with pkgs; [
             godot
             rust-bin.stable.latest.default
+            hax.packages.${system}.default
+            elan
+            just
           ];
         };
       }

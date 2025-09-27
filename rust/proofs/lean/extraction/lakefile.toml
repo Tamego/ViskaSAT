@@ -1,0 +1,12 @@
+name = "rust"
+version = "0.1.0"
+defaultTargets = ["rust"]
+
+[[lean_lib]]
+name = "rust"
+
+[[require]]
+name = "Hax"
+git.url = "https://github.com/cryspen/hax"
+git.subDir = "hax-lib/proof-libs/lean"
+rev = "main"
