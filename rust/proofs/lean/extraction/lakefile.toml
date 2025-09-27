@@ -1,9 +1,9 @@
-name = "rust"
+name = "Rust"
 version = "0.1.0"
-defaultTargets = ["rust"]
+defaultTargets = ["Rust"]
 
 [[lean_lib]]
-name = "rust"
+name = "Rust"
 
 [[require]]
 name = "Hax"
