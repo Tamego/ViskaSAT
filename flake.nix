@@ -17,17 +17,16 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        overlays = [
-          rust-overlay.overlays.default
-        ];
+        overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs { inherit system overlays; };
+        rust-version = "1.86.0";
       in
       {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             godot
-            rust-bin.stable.latest.default
-            rust-bin.stable.latest.rust-analyzer
+            rust-bin.stable.${rust-version}.minimal
+            rust-bin.stable.${rust-version}.rust-analyzer
             hax.packages.${system}.default
             elan
             just
