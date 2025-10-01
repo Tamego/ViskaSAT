@@ -1,9 +1,12 @@
-// ~/~ begin <<rust/godot-rust/src/lib.md#rust/godot-rust/src/lib.rs>>[init]
-// ~/~ begin <<rust/godot-rust/src/lib.md#l_godot-rust-module>>[init]
+// ~/~ begin <<rust/godot-rust/src/lib.typ#rust/godot-rust/src/lib.rs>>[init]
+//| file: rust/godot-rust/src/lib.rs
+// ~/~ begin <<rust/godot-rust/src/lib.typ#l_godot-rust-module>>[init]
+//| id: l_godot-rust-module
 use godot::prelude::*;
 // ~/~ end
 
-// ~/~ begin <<rust/godot-rust/src/lib.md#l_gdextension-entry-point>>[init]
+// ~/~ begin <<rust/godot-rust/src/lib.typ#l_gdextension-entry-point>>[init]
+//| id: l_gdextension-entry-point
 struct ViskaSATExtension;
 
 #[gdextension]

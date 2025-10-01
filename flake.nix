@@ -30,6 +30,7 @@
             hax.packages.${system}.default
             elan
             just
+            typst
           ];
         };
       }
