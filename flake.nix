@@ -32,6 +32,10 @@
             just
             typst
           ];
+
+          shellHook = ''
+            export TYPST_ROOT="$PWD"
+          '';
         };
       }
     );

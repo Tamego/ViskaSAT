@@ -117,7 +117,7 @@
   set heading(numbering: "1.1")
   show heading: set text(
     font: ((name: sansfont, covers: non-cjk), sansfont-cjk),
-    weight: 550,
+    weight: 601,
   )
   show heading: it => block(
     above: (if book { 1.75 } else { 1 }) * baselineskip - cjkheight * fontsize,
@@ -181,13 +181,14 @@
     #if not book { v(baselineskip / 2 - 0.1 * fontsize) }
   ]
   set list(indent: 1.2em)
+  set strong(delta: 0)
   show strong: set text(
     font: ((name: sansfont, covers: non-cjk), sansfont-cjk),
-    weight: 550,
+    weight: 601,
   )
   show emph: set text(
     font: ((name: seriffont, covers: non-cjk), sansfont-cjk),
-    weight: 550,
+    weight: 601,
   )
   set quote(block: true)
   show quote.where(block: true): set pad(left: 2em, right: 0em)

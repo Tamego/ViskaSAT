@@ -1,4 +1,4 @@
-#import "typst/js.typ": *
+#import "js.typ": *
 
 #show: js
 
@@ -10,4 +10,4 @@
 
 = アルゴリズム
 = Godot
-#include "rust/godot-rust/src/lib.typ"
+#include "../rust/godot-rust/src/lib.typ"
