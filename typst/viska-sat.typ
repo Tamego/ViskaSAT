@@ -9,5 +9,7 @@
 )
 
 = アルゴリズム
+#include "../rust/viska-sat/src/lib.typ"
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
+= テスト
