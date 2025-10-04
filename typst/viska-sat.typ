@@ -13,3 +13,5 @@
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
 = テスト
+#include "../rust/godot-rust/src/tests/tests.typ"
+#include "../rust/godot-rust/src/tests/thread_channel_communication.typ"
