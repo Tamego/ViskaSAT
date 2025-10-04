@@ -1,6 +1,6 @@
 == エントリーポイント
 
-godot-rust *APIの*主要部分を読み込む。
+godot-rust APIの主要部分を読み込む。
 
 ```rust
 //| id: l_godot-rust-module
