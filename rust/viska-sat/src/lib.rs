@@ -3,5 +3,6 @@
 mod lit;
 mod clause;
 mod cnf;
+mod assignment;
 mod solver;
 // ~/~ end

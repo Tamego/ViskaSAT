@@ -38,3 +38,14 @@ pub struct Cnf {
     pub num_vars: usize
 }
 ```
+
+=== 割り当て
+各変数に真偽値を対応付ける構造を*割り当て*という。
+真・偽・未割り当ての3つの値を取り得るので、`Option<bool>` 型を取ることで対応する。
+それの配列として割り当てを表現する。
+```rust
+//| file: rust/viska-sat/src/assignment.rs
+pub struct Assignment {
+    pub values: Vec<Option<bool>>
+}
+```

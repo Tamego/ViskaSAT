@@ -13,5 +13,6 @@ SAT ソルバのアルゴリズム部分だけを取り出してライブラリ�
 mod lit;
 mod clause;
 mod cnf;
+mod assignment;
 mod solver;
 ```
