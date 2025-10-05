@@ -1,4 +1,4 @@
-== スレッド間のチャネルの通信
+== スレッド間のチャネルの通信 <sec_thread-test>
 `Solver` と `SolverRunner` 間の通信の中核をなすチャネルについてテストしてみる。
 
 スレッドとチャネルのモジュールを読み込む。
@@ -16,7 +16,7 @@ use std::time::Duration;
 //| id: tcc_init
 fn init(base: Base<Control>) -> Self {
     Self {
-        num_rx: None,
+        event_rx: None,
         ctrl_tx: None,
         is_pause: true,
         base
@@ -29,9 +29,9 @@ fn init(base: Base<Control>) -> Self {
 チャネルを立ててフィールドに代入したり、その他変数を用意する。
 ```rust
 //| id: tcc_init_vars
-let (num_tx, num_rx) = mpsc::channel::<u64>();
+let (event_tx, event_rx) = mpsc::channel::<u64>();
 let (ctrl_tx, ctrl_rx) = mpsc::channel::<bool>();
-self.num_rx = Some(num_rx);
+self.event_rx = Some(event_rx);
 self.ctrl_tx = Some(ctrl_tx);
 
 let mut is_pause = self.is_pause;
@@ -44,7 +44,7 @@ let mut is_pause = self.is_pause;
 thread::spawn(move || {
     for val in 0..=100 {
         <<tcc_pause-handle>>
-        num_tx.send(val).unwrap();
+        event_tx.send(val).unwrap();
         thread::sleep(Duration::from_secs(1));
     }
 });
@@ -78,7 +78,7 @@ fn ready(&mut self) {
 そもそもチャネルが作られているか確認する。
 ```rust
 //| id: tcc_check-channel
-let (num_rx, ctrl_tx) = match (&self.num_rx, &self.ctrl_tx) {
+let (event_rx, ctrl_tx) = match (&self.event_rx, &self.ctrl_tx) {
     (Some(rx), Some(tx)) => (rx, tx),
     _ => return,
 };
@@ -87,7 +87,7 @@ let (num_rx, ctrl_tx) = match (&self.num_rx, &self.ctrl_tx) {
 もしデータがあるなら受け取る。
 ```rust
 //| id: tcc_receive
-if let Ok(received) = num_rx.try_recv() {
+if let Ok(received) = event_rx.try_recv() {
     godot_print!("{}", received);
 }
 ```
@@ -116,20 +116,19 @@ fn process(&mut self, _delta: f64) {
 //| file: rust/godot-rust/src/tests/thread_channel_communication.rs
 use godot::prelude::*;
 use godot::classes::{Control, IControl};
-use std::process;
 <<tcc_modules>>
 
 #[derive(GodotClass)]
 #[class(base=Control)]
-struct ThreadChannelCommunicatoin {
-    num_rx: Option<mpsc::Receiver<u64>>,
+struct ThreadChannelCommunication {
+    event_rx: Option<mpsc::Receiver<u64>>,
     ctrl_tx: Option<mpsc::Sender<bool>>,
     is_pause: bool,
     base: Base<Control>
 }
 
 #[godot_api]
-impl IControl for ThreadChannelCommunicatoin {
+impl IControl for ThreadChannelCommunication {
     <<tcc_init>>
     <<tcc_ready>>
     <<tcc_process>>
