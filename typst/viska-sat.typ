@@ -12,6 +12,8 @@
 #include "../rust/viska-sat/src/lib.typ"
 #include "../rust/viska-sat/src/basic_types.typ"
 #include "../rust/viska-sat/src/solver.typ"
+#include "../rust/viska-sat/src/solver_communicator.typ"
+#include "../rust/viska-sat/src/event_handler.typ"
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
 = テスト
