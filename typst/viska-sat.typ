@@ -10,6 +10,8 @@
 
 = アルゴリズム
 #include "../rust/viska-sat/src/lib.typ"
+#include "../rust/viska-sat/src/basic_types.typ"
+#include "../rust/viska-sat/src/solver.typ"
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
 = テスト

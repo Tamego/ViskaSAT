@@ -10,4 +10,8 @@ SAT ソルバのアルゴリズム部分だけを取り出してライブラリ�
 
 ```rust
 //| file: rust/viska-sat/src/lib.rs
+mod lit;
+mod clause;
+mod cnf;
+mod solver;
 ```
