@@ -31,8 +31,8 @@ pub enum SolverCommunicatorError {
 ```rust
 //| id: sol_solver-communicator-decl
 pub struct SolverCommunicator<Event> {
-    event_tx: Sender<Event>,
-    ctrl_rx: Receiver<SolverControl>,
+    pub event_tx: Sender<Event>,
+    pub ctrl_rx: Receiver<SolverControl>,
 }
 ```
 
