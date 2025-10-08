@@ -1,4 +1,4 @@
-== `Solver` トレイト
+== `Solver` トレイト <sec_solver-trait-test>
 @sec_solver 節で定義した `Solver` トレイトをテストしてみる。
 @sec_thread-test 節の一部を `Solver` トレイトを実装した構造体に置き換えて同様に動作することを確認する。
 

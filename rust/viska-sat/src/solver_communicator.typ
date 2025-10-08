@@ -1,6 +1,7 @@
 == `Solver` と `SolverRunner` 間の通信
 `Solver` と `SolverRunner` 間の通信のために `SolverCommunicator` を定める。
 これは以下の関数を持つ：
+/ `SolverCommunicator::new()`: `event_tx` と `ctrl_rx` を引数にとるコンストラクタ。
 / `SolverCommunicator::send_event()`: `SolverRunner` にソルバのイベントを伝える。
 / `SolverCommunicator::try_recv_latest_control()`: `SolverRunner` からの*最新の制御のみ*を受けとる。スレッドをブロックしない。
 / `SolverCommunicator::recv_latest_control()`: `SolverRunner` からの*最新の制御のみ*（`SolverControl`）を受けとる。スレッドをブロックする。
@@ -9,6 +10,7 @@
 停止と再開のみを想定しているが、今後増やすかもしれない。
 ```rust
 //| id: sol_solver-control
+#[derive(PartialEq, Eq)]
 pub enum SolverControl {
     Pause,
     Resume
@@ -18,6 +20,7 @@ pub enum SolverControl {
 また、`SolverCommunicator` に関連するエラーハンドリングのための列挙型を作る。
 ```rust
 //| id: sol_solver-communicator-error
+#[derive(Debug)]
 pub enum SolverCommunicatorError {
     SendFailed,
     ReceiveFailed,
@@ -31,8 +34,8 @@ pub enum SolverCommunicatorError {
 ```rust
 //| id: sol_solver-communicator-decl
 pub struct SolverCommunicator<Event> {
-    pub event_tx: Sender<Event>,
-    pub ctrl_rx: Receiver<SolverControl>,
+    event_tx: Sender<Event>,
+    ctrl_rx: Receiver<SolverControl>,
 }
 ```
 
@@ -40,9 +43,17 @@ pub struct SolverCommunicator<Event> {
 ```rust
 //| id: sol_solver-communicator-impl
 impl<Event> SolverCommunicator<Event> {
+    <<solsc_constructor>>
     <<solsc_send-event>>
     <<solsc_try-recv-latest-control>>
     <<solsc_recv-latest-control>>
+}
+```
+
+```rust
+//| id: solsc_constructor
+pub fn new(event_tx: Sender<Event>, ctrl_rx: Receiver<SolverControl>) -> Self {
+    Self { event_tx, ctrl_rx }
 }
 ```
 
@@ -84,8 +95,12 @@ pub fn recv_latest_control(&mut self) -> Result<SolverControl, SolverCommunicato
         Ok(val) => val,
         Err(_) => return Err(SolverCommunicatorError::ReceiveFailed),
     };
-    if let Ok(Some(received)) = self.try_recv_latest_control() {
-        recv = received;
+    match self.try_recv_latest_control() {
+        Ok(Some(received)) => {
+            recv = received;
+        },
+        Err(_) => return Err(SolverCommunicatorError::ReceiveFailed),
+        _ => {}
     }
     Ok(recv)
 }

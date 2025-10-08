@@ -3,6 +3,7 @@
 use std::sync::mpsc::{Sender, Receiver, TryRecvError};
 // ~/~ begin <<rust/viska-sat/src/solver_communicator.typ#sol_solver-control>>[init]
 //| id: sol_solver-control
+#[derive(PartialEq, Eq)]
 pub enum SolverControl {
     Pause,
     Resume
@@ -10,6 +11,7 @@ pub enum SolverControl {
 // ~/~ end
 // ~/~ begin <<rust/viska-sat/src/solver_communicator.typ#sol_solver-communicator-error>>[init]
 //| id: sol_solver-communicator-error
+#[derive(Debug)]
 pub enum SolverCommunicatorError {
     SendFailed,
     ReceiveFailed,
@@ -19,13 +21,19 @@ pub enum SolverCommunicatorError {
 // ~/~ begin <<rust/viska-sat/src/solver_communicator.typ#sol_solver-communicator-decl>>[init]
 //| id: sol_solver-communicator-decl
 pub struct SolverCommunicator<Event> {
-    pub event_tx: Sender<Event>,
-    pub ctrl_rx: Receiver<SolverControl>,
+    event_tx: Sender<Event>,
+    ctrl_rx: Receiver<SolverControl>,
 }
 // ~/~ end
 // ~/~ begin <<rust/viska-sat/src/solver_communicator.typ#sol_solver-communicator-impl>>[init]
 //| id: sol_solver-communicator-impl
 impl<Event> SolverCommunicator<Event> {
+    // ~/~ begin <<rust/viska-sat/src/solver_communicator.typ#solsc_constructor>>[init]
+    //| id: solsc_constructor
+    pub fn new(event_tx: Sender<Event>, ctrl_rx: Receiver<SolverControl>) -> Self {
+        Self { event_tx, ctrl_rx }
+    }
+    // ~/~ end
     // ~/~ begin <<rust/viska-sat/src/solver_communicator.typ#solsc_send-event>>[init]
     //| id: solsc_send-event
     pub fn send_event(&mut self, event: Event) -> Result<(), SolverCommunicatorError> {
@@ -55,8 +63,12 @@ impl<Event> SolverCommunicator<Event> {
             Ok(val) => val,
             Err(_) => return Err(SolverCommunicatorError::ReceiveFailed),
         };
-        if let Ok(Some(received)) = self.try_recv_latest_control() {
-            recv = received;
+        match self.try_recv_latest_control() {
+            Ok(Some(received)) => {
+                recv = received;
+            },
+            Err(_) => return Err(SolverCommunicatorError::ReceiveFailed),
+            _ => {}
         }
         Ok(recv)
     }

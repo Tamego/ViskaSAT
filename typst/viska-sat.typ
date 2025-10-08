@@ -10,7 +10,7 @@
 
 #outline()
 
-= アルゴリズム
+= 共通インターフェース
 #include "../rust/viska-sat/src/lib.typ"
 #include "../rust/viska-sat/src/basic_types.typ"
 #include "../rust/viska-sat/src/solver.typ"
@@ -19,6 +19,7 @@
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
 = テスト
-#include "../rust/godot-rust/src/tests/tests.typ"
+#include "../rust/godot-rust/src/tests.typ"
 #include "../rust/godot-rust/src/tests/thread_channel_communication.typ"
 #include "../rust/godot-rust/src/tests/solver_trait.typ"
+#include "../rust/godot-rust/src/tests/solver_communicator.typ"
