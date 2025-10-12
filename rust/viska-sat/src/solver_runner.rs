@@ -58,10 +58,11 @@ impl<Event> EventHandler for SolverRunnerEventHandler<Event> {
 // ~/~ end
 // ~/~ begin <<rust/viska-sat/src/solver_runner.typ#sor_error>>[init]
 //| id: sor_error
-pub enum SolverRunnerError<S: Solver> {
+#[derive(Debug)]
+pub enum SolverRunnerError<E> {
     SendFailed,
     ReceiveFailed,
-    SolverError(S::Error),
+    SolverError(E),
     NotFinished,
     JoinPanicked,
     AlreadyJoined
@@ -104,7 +105,7 @@ where
     // ~/~ end
     // ~/~ begin <<rust/viska-sat/src/solver_runner.typ#sorr_try-recv-event>>[init]
     //| id: sorr_try-recv-event
-    pub fn try_recv_event(&mut self) -> Result<Option<S::Event>, SolverRunnerError<S>> {
+    pub fn try_recv_event(&self) -> Result<Option<S::Event>, SolverRunnerError<S::Error>> {
         match self.event_rx.try_recv() {
             Ok(recv) => return Ok(Some(recv)),
             Err(TryRecvError::Empty) => return Ok(None),
@@ -114,7 +115,7 @@ where
     // ~/~ end
     // ~/~ begin <<rust/viska-sat/src/solver_runner.typ#sorr_send-control>>[init]
     //| id: sorr_send-control
-    pub fn send_control(&mut self, control: SolverControl) -> Result<(), SolverRunnerError<S>> {
+    pub fn send_control(&self, control: SolverControl) -> Result<(), SolverRunnerError<S::Error>> {
         if self.ctrl_tx.send(control).is_err() {
             return Err(SolverRunnerError::SendFailed);
         }
@@ -123,7 +124,7 @@ where
     // ~/~ end
     // ~/~ begin <<rust/viska-sat/src/solver_runner.typ#sorr_try-join>>[init]
     //| id: sorr_try-join
-    pub fn try_join(&mut self) -> Result<SatResult, SolverRunnerError<S>> {
+    pub fn try_join(&mut self) -> Result<SatResult, SolverRunnerError<S::Error>> {
         let handle = match self.join_handle.as_ref() {
             Some(handle) => {
                 if handle.is_finished() {

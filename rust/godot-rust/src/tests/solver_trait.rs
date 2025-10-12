@@ -78,16 +78,19 @@ impl EventHandler for TestHandler {
 //| id: sot_dummy-solver
 // ~/~ begin <<rust/godot-rust/src/tests/solver_trait.typ#sotds_decl>>[init]
 //| id: sotds_decl
-struct DummySolver {
-    handler: <DummySolver as Solver>::Handler,
+struct DummySolver<H> {
+    handler: H,
 }
 // ~/~ end
-impl Solver for DummySolver {
+impl<H> Solver for DummySolver<H> 
+where
+    H: EventHandler<Event = u64, Error = TestError>
+{
     // ~/~ begin <<rust/godot-rust/src/tests/solver_trait.typ#sotds_associated-types>>[init]
     //| id: sotds_associated-types
     type Event = u64;
     type Error = TestError;
-    type Handler = TestHandler;
+    type Handler = H;
     // ~/~ end
     // ~/~ begin <<rust/godot-rust/src/tests/solver_trait.typ#sotds_solve>>[init]
     //| id: sotds_solve

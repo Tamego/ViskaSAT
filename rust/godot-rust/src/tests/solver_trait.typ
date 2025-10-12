@@ -92,8 +92,8 @@ impl EventHandler for TestHandler {
 実際にソルバとしては機能しない、ただ数字をカウントアップするだけのダミー `DummySolver` を作る。
 ```rust
 //| id: sotds_decl
-struct DummySolver {
-    handler: <DummySolver as Solver>::Handler,
+struct DummySolver<H> {
+    handler: H,
 }
 ```
 
@@ -103,7 +103,7 @@ struct DummySolver {
 //| id: sotds_associated-types
 type Event = u64;
 type Error = TestError;
-type Handler = TestHandler;
+type Handler = H;
 ```
 
 ソルバの中身を定義する。
@@ -123,7 +123,10 @@ fn solve(&mut self) -> Result<viska_sat::solver::SatResult, Self::Error> {
 ```rust
 //| id: sot_dummy-solver
 <<sotds_decl>>
-impl Solver for DummySolver {
+impl<H> Solver for DummySolver<H> 
+where
+    H: EventHandler<Event = u64, Error = TestError>
+{
     <<sotds_associated-types>>
     <<sotds_solve>>
 }

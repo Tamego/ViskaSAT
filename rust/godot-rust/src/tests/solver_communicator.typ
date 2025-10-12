@@ -82,7 +82,7 @@ impl EventHandler for TestHandler {
 //| id: socds_associated-types
 type Event = u64;
 type Error = SolverCommunicatorError;
-type Handler = TestHandler;
+type Handler = H;
 ```
 
 ソルバの中身はだいたいそのまま。
@@ -102,7 +102,10 @@ fn solve(&mut self) -> Result<viska_sat::solver::SatResult, Self::Error> {
 ```rust
 //| id: soc_dummy-solver
 <<sotds_decl>>
-impl Solver for DummySolver {
+impl<H> Solver for DummySolver<H>
+where
+    H: EventHandler<Error = SolverCommunicatorError, Event = u64>
+{
     <<socds_associated-types>>
     <<socds_solve>>
 }

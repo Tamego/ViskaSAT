@@ -60,16 +60,19 @@ impl EventHandler for TestHandler {
 //| id: soc_dummy-solver
 // ~/~ begin <<rust/godot-rust/src/tests/solver_trait.typ#sotds_decl>>[init]
 //| id: sotds_decl
-struct DummySolver {
-    handler: <DummySolver as Solver>::Handler,
+struct DummySolver<H> {
+    handler: H,
 }
 // ~/~ end
-impl Solver for DummySolver {
+impl<H> Solver for DummySolver<H>
+where
+    H: EventHandler<Error = SolverCommunicatorError, Event = u64>
+{
     // ~/~ begin <<rust/godot-rust/src/tests/solver_communicator.typ#socds_associated-types>>[init]
     //| id: socds_associated-types
     type Event = u64;
     type Error = SolverCommunicatorError;
-    type Handler = TestHandler;
+    type Handler = H;
     // ~/~ end
     // ~/~ begin <<rust/godot-rust/src/tests/solver_communicator.typ#socds_solve>>[init]
     //| id: socds_solve

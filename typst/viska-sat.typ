@@ -24,3 +24,4 @@
 #include "../rust/godot-rust/src/tests/thread_channel_communication.typ"
 #include "../rust/godot-rust/src/tests/solver_trait.typ"
 #include "../rust/godot-rust/src/tests/solver_communicator.typ"
+#include "../rust/godot-rust/src/tests/solver_runner.typ"
