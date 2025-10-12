@@ -7,4 +7,5 @@ pub mod assignment;
 pub mod event_handler;
 pub mod solver;
 pub mod solver_communicator;
+pub mod solver_runner;
 // ~/~ end

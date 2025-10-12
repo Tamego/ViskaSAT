@@ -1,10 +1,10 @@
 == `Solver` と `SolverRunner` 間の通信
 `Solver` と `SolverRunner` 間の通信のために `SolverCommunicator` を定める。
 これは以下の関数を持つ：
-/ `SolverCommunicator::new()`: `event_tx` と `ctrl_rx` を引数にとるコンストラクタ。
-/ `SolverCommunicator::send_event()`: `SolverRunner` にソルバのイベントを伝える。
-/ `SolverCommunicator::try_recv_latest_control()`: `SolverRunner` からの*最新の制御のみ*を受けとる。スレッドをブロックしない。
-/ `SolverCommunicator::recv_latest_control()`: `SolverRunner` からの*最新の制御のみ*（`SolverControl`）を受けとる。スレッドをブロックする。
+/ `new()`: `event_tx` と `ctrl_rx` を引数にとるコンストラクタ。
+/ `send_event()`: `SolverRunner` にソルバのイベントを伝える。
+/ `try_recv_latest_control()`: `SolverRunner` からの*最新の制御のみ*を受けとる。スレッドをブロックしない。
+/ `recv_latest_control()`: `SolverRunner` からの*最新の制御のみ*（`SolverControl`）を受けとる。スレッドをブロックする。
 
 `SolverControl` は全ソルバに共通するので、ここで列挙型で定義する。
 停止と再開のみを想定しているが、今後増やすかもしれない。
@@ -57,7 +57,7 @@ pub fn new(event_tx: Sender<Event>, ctrl_rx: Receiver<SolverControl>) -> Self {
 }
 ```
 
-イベントを送信する。もし失敗したなら `SolverCommunicatorError::SendFailed` を返す。
+イベントを送信する。
 ```rust
 //| id: solsc_send-event
 pub fn send_event(&mut self, event: Event) -> Result<(), SolverCommunicatorError> {
