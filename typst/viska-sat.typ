@@ -17,6 +17,8 @@
 #include "../rust/viska-sat/src/solver_communicator.typ"
 #include "../rust/viska-sat/src/event_handler.typ"
 #include "../rust/viska-sat/src/solver_runner.typ"
+= アルゴリズム
+#include "../rust/viska-sat/src/brute_force.typ"
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
 = テスト
