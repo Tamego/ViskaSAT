@@ -27,3 +27,4 @@
 #include "../rust/godot-rust/src/tests/solver_trait.typ"
 #include "../rust/godot-rust/src/tests/solver_communicator.typ"
 #include "../rust/godot-rust/src/tests/solver_runner.typ"
+#include "../rust/viska-sat/tests/tests.typ"

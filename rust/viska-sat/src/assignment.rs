@@ -1,6 +1,6 @@
 // ~/~ begin <<rust/viska-sat/src/basic_types.typ#rust/viska-sat/src/assignment.rs>>[init]
 //| file: rust/viska-sat/src/assignment.rs
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Assignment {
     pub values: Vec<Option<bool>>
 }

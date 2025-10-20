@@ -5,6 +5,7 @@
 `SolverReulst` は列挙型で定義する。
 ```rust
 //| id: sol_solver-result
+#[derive(Debug, Clone)]
 pub enum SatResult {
     Sat(Assignment),
     Unsat

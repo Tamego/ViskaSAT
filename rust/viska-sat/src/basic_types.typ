@@ -7,7 +7,7 @@
 つまり、割り当てが完全なとき、各要素は `Some(true)` か `Some(false)` のいずれかである。
 ```rust
 //| file: rust/viska-sat/src/assignment.rs
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Assignment {
     pub values: Vec<Option<bool>>
 }

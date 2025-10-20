@@ -2,16 +2,18 @@
 //| file: rust/viska-sat/src/brute_force.rs
 use crate::{assignment::Assignment, cnf::Cnf, event_handler::EventHandler, solver::{SatResult, Solver}};
 
+#[derive(Debug)]
 pub enum BruteForceSolverEvent {
     Choose {idx: usize, assign: bool},
     Eval {result: bool},
     Unchoose {idx: usize},
+    Finish {result: SatResult}
 }
 
 pub struct BruteForceSolver<H> 
 {
-    cnf: Cnf,
-    handler: H
+    pub cnf: Cnf,
+    pub handler: H
 }
 
 impl<H> BruteForceSolver<H>
@@ -36,15 +38,16 @@ where
         // ~/~ end
         // ~/~ begin <<rust/viska-sat/src/brute_force.typ#brf_recursive-step>>[init]
         //| id: brf_recursive-step
-        let next_idx = idx + 1;
         for choice in [true, false] {
-            self.handler.handle_event(BruteForceSolverEvent::Choose { idx: next_idx, assign: choice })?;
-            assign.values[next_idx] = Some(choice);
-            if let SatResult::Sat(solution) = self.brute_force(next_idx, assign)? {
+            self.handler.handle_event(BruteForceSolverEvent::Choose { idx, assign: choice })?;
+            assign.values[idx] = Some(choice);
+            let result = self.brute_force(idx + 1, assign)?;
+            self.handler.handle_event(BruteForceSolverEvent::Unchoose { idx })?;
+            if let SatResult::Sat(solution) = result {
                 return Ok(SatResult::Sat(solution));
             }
-            self.handler.handle_event(BruteForceSolverEvent::Unchoose { idx: next_idx })?;
         }
+        assign.values[idx] = None;
         return Ok(SatResult::Unsat);
         // ~/~ end
     }
@@ -60,7 +63,9 @@ where
     type Error = H::Error;
 
     fn solve(&mut self) -> Result<SatResult, Self::Error> {
-        self.brute_force(0, &mut Assignment { values: vec![None; self.cnf.num_vars]})
+        let result = self.brute_force(0, &mut Assignment { values: vec![None; self.cnf.num_vars]})?;
+        self.handler.handle_event(BruteForceSolverEvent::Finish { result: result.clone() })?;
+        Ok(result)
     }
 }
 // ~/~ end

@@ -3,6 +3,7 @@
 use crate::{assignment::Assignment, event_handler::EventHandler};
 // ~/~ begin <<rust/viska-sat/src/solver.typ#sol_solver-result>>[init]
 //| id: sol_solver-result
+#[derive(Debug, Clone)]
 pub enum SatResult {
     Sat(Assignment),
     Unsat
