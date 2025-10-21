@@ -41,6 +41,7 @@ impl Assignment {
 //| file: rust/viska-sat/src/lit.rs
 use crate::assignment::Assignment;
 
+#[derive(Clone)]
 pub struct Lit {
     pub var_id: usize,
     pub negated: bool
@@ -62,6 +63,8 @@ impl Lit {
 CDCL ソルバのために必要ならメタ情報を付けることを可能にした。
 
 節内のリテラルのいずれかが充足していれば、その節は充足する。
+
+また、@sec_dpll 節で追加の実装をした。
 ```rust
 //| file: rust/viska-sat/src/clause.rs
 use crate::{assignment::Assignment, lit::Lit};
@@ -79,6 +82,8 @@ impl Clause {
         }
         return false;
     }
+
+    <<cla_unit-literal>>
 }
 ```
 
@@ -87,13 +92,17 @@ impl Clause {
 `Clause` の配列として表現する。
 `num_vars` は変数の個数（最大の ID + 1）を表す。
 全ての節が充足するときに充足する。
+
+また、@sec_dpll 節で追加の実装をした。
 ```rust
 //| file: rust/viska-sat/src/cnf.rs
-use crate::{assignment::Assignment, clause::Clause};
+use crate::{assignment::Assignment, clause::Clause, lit::Lit};
 pub struct Cnf {
     pub clauses: Vec<Clause>,
     pub num_vars: usize
 }
+
+<<cnf_unit-clause>>
 
 impl Cnf {
     pub fn is_satisfied_by(&self, assign: &Assignment) -> bool {
@@ -104,6 +113,8 @@ impl Cnf {
         }
         return true;
     }
+
+    <<cnf_collect-unit-clauses>>
 }
 ```
 

@@ -2,6 +2,7 @@
 //| file: rust/viska-sat/src/lit.rs
 use crate::assignment::Assignment;
 
+#[derive(Clone)]
 pub struct Lit {
     pub var_id: usize,
     pub negated: bool

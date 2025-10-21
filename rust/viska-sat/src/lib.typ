@@ -19,4 +19,5 @@ pub mod solver;
 pub mod solver_communicator;
 pub mod solver_runner;
 pub mod brute_force;
+pub mod dpll;
 ```

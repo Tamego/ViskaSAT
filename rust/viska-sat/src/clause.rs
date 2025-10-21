@@ -15,5 +15,25 @@ impl Clause {
         }
         return false;
     }
+
+    // ~/~ begin <<rust/viska-sat/src/dpll.typ#cla_unit-literal>>[init]
+    //| id: cla_unit-literal
+    pub fn unit_literal(&self, assign: &Assignment) -> Option<Lit> {
+        let mut candidate: Option<Lit> = None;
+        for lit in &self.lits {
+            match assign.values[lit.var_id] {
+                Some(val) if val ^ lit.negated => return None,
+                Some(_) => continue,
+                None => {
+                    if candidate.is_some() {
+                        return None;
+                    }
+                    candidate = Some(lit.clone());
+                }
+            }
+        }
+        candidate
+    }
+    // ~/~ end
 }
 // ~/~ end

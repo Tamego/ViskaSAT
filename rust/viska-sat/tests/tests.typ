@@ -129,3 +129,15 @@ fn brute_force_solver_with_logging() {
     solve_with_logging(|cnf, handler| BruteForceSolver{ cnf, handler });
 }
 ```
+=== `DpllSolver`
+```rust
+//| file: rust/viska-sat/tests/dpll_solver.rs
+mod common;
+use common::solve_with_logging;
+use viska_sat::dpll::DpllSolver;
+
+#[test]
+fn dpll_with_logging() {
+    solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler });
+}
+```

@@ -4,9 +4,9 @@ use crate::{assignment::Assignment, cnf::Cnf, event_handler::EventHandler, solve
 
 #[derive(Debug)]
 pub enum BruteForceSolverEvent {
-    Choose {idx: usize, assign: bool},
+    Decide {idx: usize, assign: bool},
     Eval {result: bool},
-    Unchoose {idx: usize},
+    Backtrack {idx: usize},
     Finish {result: SatResult}
 }
 
@@ -38,17 +38,22 @@ where
         // ~/~ end
         // ~/~ begin <<rust/viska-sat/src/brute_force.typ#brf_recursive-step>>[init]
         //| id: brf_recursive-step
+        let mut ret = SatResult::Unsat;
         for choice in [true, false] {
-            self.handler.handle_event(BruteForceSolverEvent::Choose { idx, assign: choice })?;
+            self.handler.handle_event(BruteForceSolverEvent::Decide { idx, assign: choice })?;
             assign.values[idx] = Some(choice);
             let result = self.brute_force(idx + 1, assign)?;
-            self.handler.handle_event(BruteForceSolverEvent::Unchoose { idx })?;
-            if let SatResult::Sat(solution) = result {
-                return Ok(SatResult::Sat(solution));
+            self.handler.handle_event(BruteForceSolverEvent::Backtrack { idx })?;
+            match result {
+                sat @ SatResult::Sat(_) => {
+                    ret = sat;
+                    break;
+                }
+                SatResult::Unsat => {}
             }
         }
         assign.values[idx] = None;
-        return Ok(SatResult::Unsat);
+        return Ok(ret);
         // ~/~ end
     }
     // ~/~ end
