@@ -1,6 +1,8 @@
 // ~/~ begin <<rust/viska-sat/src/basic_types.typ#rust/viska-sat/src/cnf.rs>>[init]
 //| file: rust/viska-sat/src/cnf.rs
 use crate::{assignment::Assignment, clause::Clause, lit::Lit};
+
+#[derive(Debug, Clone)]
 pub struct Cnf {
     pub clauses: Vec<Clause>,
     pub num_vars: usize

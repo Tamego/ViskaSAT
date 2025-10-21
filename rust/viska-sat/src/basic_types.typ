@@ -41,7 +41,7 @@ impl Assignment {
 //| file: rust/viska-sat/src/lit.rs
 use crate::assignment::Assignment;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Lit {
     pub var_id: usize,
     pub negated: bool
@@ -68,6 +68,7 @@ CDCL ソルバのために必要ならメタ情報を付けることを可能に
 ```rust
 //| file: rust/viska-sat/src/clause.rs
 use crate::{assignment::Assignment, lit::Lit};
+#[derive(Debug, Clone)]
 pub struct Clause<Meta=()> {
     pub lits: Vec<Lit>,
     pub meta: Meta,
@@ -97,6 +98,8 @@ impl Clause {
 ```rust
 //| file: rust/viska-sat/src/cnf.rs
 use crate::{assignment::Assignment, clause::Clause, lit::Lit};
+
+#[derive(Debug, Clone)]
 pub struct Cnf {
     pub clauses: Vec<Clause>,
     pub num_vars: usize

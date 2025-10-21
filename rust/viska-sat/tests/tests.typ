@@ -24,32 +24,34 @@ where
 }
 ```
 
-`solve_with_logging()` で解くCNFは次の通り：
-$
-(x_1 or x_2 or x_3) and (not x_1 or not x_2) and (x_1 or not x_2 or not x_3)
-$
-これをCNFで表すと次のようになる：
+`solve_with_logging()` では用意されたいくつかのCNFを選んで解くことができる。
+1. @sec_dpll 節で出てきたCNF。
+  $
+  (x_1 or x_2 or x_3) and (not x_1 or not x_2) and (x_1 or not x_2 or not x_3)
+  $
 ```rust
 //| id: vst_sample-cnf
-let sample_cnf = Cnf {
-    num_vars: 3,
-    clauses: vec![
-        Clause { lits: vec![
-            Lit { var_id: 0, negated: false },
-            Lit { var_id: 1, negated: false },
-            Lit { var_id: 2, negated: false },
-        ], meta: () },
-        Clause { lits: vec![
-            Lit { var_id: 0, negated: true },
-            Lit { var_id: 1, negated: true },
-        ], meta: () },
-        Clause { lits: vec![
-            Lit { var_id: 0, negated: false },
-            Lit { var_id: 1, negated: true },
-            Lit { var_id: 2, negated: true },
-        ], meta: () },
-    ],
-};
+let sample_cnfs = vec![
+    Cnf {
+        num_vars: 3,
+        clauses: vec![
+            Clause { lits: vec![
+                Lit { var_id: 0, negated: false },
+                Lit { var_id: 1, negated: false },
+                Lit { var_id: 2, negated: false },
+            ], meta: () },
+            Clause { lits: vec![
+                Lit { var_id: 0, negated: true },
+                Lit { var_id: 1, negated: true },
+            ], meta: () },
+            Clause { lits: vec![
+                Lit { var_id: 0, negated: false },
+                Lit { var_id: 1, negated: true },
+                Lit { var_id: 2, negated: true },
+            ], meta: () },
+        ],
+    },
+];
 ```
 
 これを解かせるときに、ログを出すようにしたいので、ログを出すハンドラを定義する。
@@ -83,15 +85,17 @@ impl<E: Debug> EventHandler for LoggerHandler<E>
 
 ```rust
 //| id: vst_solve-with-logging
-pub fn solve_with_logging<S, F>(make_solver: F)
+pub fn solve_with_logging<S, F>(make_solver: F, test_num: usize)
 where
     S: Solver,
     S::Event: Debug,
     F: FnOnce(Cnf, LoggerHandler<S::Event>) -> S
 {
     <<vst_sample-cnf>>
+    let cnf = sample_cnfs[test_num].clone();
+    println!("problem: {:?}", test_num);
     let handler = LoggerHandler::<S::Event>::new();
-    let (_result, elapsed) = run_solver(sample_cnf, handler, make_solver);
+    let (_result, elapsed) = run_solver(cnf, handler, make_solver);
     println!("time: {:?}", elapsed);
 }
 ```
@@ -126,7 +130,9 @@ use viska_sat::brute_force::BruteForceSolver;
 
 #[test]
 fn brute_force_solver_with_logging() {
-    solve_with_logging(|cnf, handler| BruteForceSolver{ cnf, handler });
+    for i in 0..=0 {
+        solve_with_logging(|cnf, handler| BruteForceSolver{ cnf, handler }, i);
+    }
 }
 ```
 === `DpllSolver`
@@ -138,6 +144,8 @@ use viska_sat::dpll::DpllSolver;
 
 #[test]
 fn dpll_with_logging() {
-    solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler });
+    for i in 0..=0 {
+        solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler }, i);
+    }
 }
 ```

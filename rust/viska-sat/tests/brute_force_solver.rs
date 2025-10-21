@@ -6,6 +6,8 @@ use viska_sat::brute_force::BruteForceSolver;
 
 #[test]
 fn brute_force_solver_with_logging() {
-    solve_with_logging(|cnf, handler| BruteForceSolver{ cnf, handler });
+    for i in 0..=0 {
+        solve_with_logging(|cnf, handler| BruteForceSolver{ cnf, handler }, i);
+    }
 }
 // ~/~ end

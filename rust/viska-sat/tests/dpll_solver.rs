@@ -6,6 +6,8 @@ use viska_sat::dpll::DpllSolver;
 
 #[test]
 fn dpll_with_logging() {
-    solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler });
+    for i in 0..=0 {
+        solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler }, i);
+    }
 }
 // ~/~ end

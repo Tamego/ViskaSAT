@@ -116,8 +116,7 @@ fn dpll(&mut self, assign: &mut Assignment) -> Result<SatResult, H::Error> {
 ```rust
 //| id: dpll_unit-propagation
 let mut propagated_vars = vec![];
-let mut unit_clauses = self.cnf.collect_unit_clauses(assign);
-while let Some(unit_clause) = unit_clauses.pop() {
+while let Some(unit_clause) = self.cnf.collect_unit_clauses(assign).pop() {
     let propagated_lit = unit_clause.lit;
     let propagated_var_id = propagated_lit.var_id;
     let val = !propagated_lit.negated;
@@ -130,14 +129,15 @@ while let Some(unit_clause) = unit_clauses.pop() {
 ベースケースはほとんど前回と同じ。
 ```rust
 //| id: dpll_eval-with-assignment
+let mut ret = SatResult::Unsat;
 if assign.is_full() {
     let is_sat = self.cnf.is_satisfied_by(assign);
     self.handler.handle_event(DpllSolverEvent::Eval { result: is_sat })?;
     if is_sat {
-        return Ok(SatResult::Sat(assign.clone()));
+        ret = SatResult::Sat(assign.clone())
     }
     else {
-        return Ok(SatResult::Unsat)
+        ret = SatResult::Unsat
     }
 }
 ```
@@ -145,25 +145,27 @@ if assign.is_full() {
 `idx` の扱いが全探索の場合とは異なっているが、だいたい同じことをしている。
 ```rust
 //| id: dpll_decide
-let mut ret = SatResult::Unsat;
-let idx = self.pick_unassigned_var(assign).expect("branching called with fully assigned assignment");
-for choice in [true, false] {
-    self.handler.handle_event(DpllSolverEvent::Decide { idx, assign: choice })?;
-    assign.values[idx] = Some(choice);
-    let result = self.dpll(assign)?;
-    self.handler.handle_event(DpllSolverEvent::Backtrack { idx })?;
-    match result {
-        sat @ SatResult::Sat(_) => {
-            ret = sat;
-            break;
+else {
+    let idx = self.pick_unassigned_var(assign).expect("branching called with fully assigned assignment");
+    for choice in [true, false] {
+        self.handler.handle_event(DpllSolverEvent::Decide { idx, assign: choice })?;
+        assign.values[idx] = Some(choice);
+        let result = self.dpll(assign)?;
+        self.handler.handle_event(DpllSolverEvent::Backtrack { idx })?;
+        match result {
+            sat @ SatResult::Sat(_) => {
+                ret = sat;
+                break;
+            }
+            SatResult::Unsat => {}
         }
-        SatResult::Unsat => {}
     }
+    assign.values[idx] = None;
 }
 while let Some(var_id) = propagated_vars.pop() {
     assign.values[var_id] = None;
+    self.handler.handle_event(DpllSolverEvent::Backtrack { idx: var_id })?;
 }
-assign.values[idx] = None;
 return Ok(ret);
 ```
 

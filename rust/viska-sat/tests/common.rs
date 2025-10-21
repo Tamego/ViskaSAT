@@ -46,7 +46,7 @@ impl<E: Debug> EventHandler for LoggerHandler<E>
 // ~/~ end
 // ~/~ begin <<rust/viska-sat/tests/tests.typ#vst_solve-with-logging>>[init]
 //| id: vst_solve-with-logging
-pub fn solve_with_logging<S, F>(make_solver: F)
+pub fn solve_with_logging<S, F>(make_solver: F, test_num: usize)
 where
     S: Solver,
     S::Event: Debug,
@@ -54,28 +54,32 @@ where
 {
     // ~/~ begin <<rust/viska-sat/tests/tests.typ#vst_sample-cnf>>[init]
     //| id: vst_sample-cnf
-    let sample_cnf = Cnf {
-        num_vars: 3,
-        clauses: vec![
-            Clause { lits: vec![
-                Lit { var_id: 0, negated: false },
-                Lit { var_id: 1, negated: false },
-                Lit { var_id: 2, negated: false },
-            ], meta: () },
-            Clause { lits: vec![
-                Lit { var_id: 0, negated: true },
-                Lit { var_id: 1, negated: true },
-            ], meta: () },
-            Clause { lits: vec![
-                Lit { var_id: 0, negated: false },
-                Lit { var_id: 1, negated: true },
-                Lit { var_id: 2, negated: true },
-            ], meta: () },
-        ],
-    };
+    let sample_cnfs = vec![
+        Cnf {
+            num_vars: 3,
+            clauses: vec![
+                Clause { lits: vec![
+                    Lit { var_id: 0, negated: false },
+                    Lit { var_id: 1, negated: false },
+                    Lit { var_id: 2, negated: false },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 0, negated: true },
+                    Lit { var_id: 1, negated: true },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 0, negated: false },
+                    Lit { var_id: 1, negated: true },
+                    Lit { var_id: 2, negated: true },
+                ], meta: () },
+            ],
+        },
+    ];
     // ~/~ end
+    let cnf = sample_cnfs[test_num].clone();
+    println!("problem: {:?}", test_num);
     let handler = LoggerHandler::<S::Event>::new();
-    let (_result, elapsed) = run_solver(sample_cnf, handler, make_solver);
+    let (_result, elapsed) = run_solver(cnf, handler, make_solver);
     println!("time: {:?}", elapsed);
 }
 // ~/~ end
