@@ -1,40 +1,44 @@
 // ~/~ begin <<rust/viska-sat/src/basic_types.typ#rust/viska-sat/src/clause.rs>>[init]
 //| file: rust/viska-sat/src/clause.rs
-use crate::{assignment::Assignment, lit::Lit};
+use crate::{assignment::Assignment, lit::{LitState, Lit}};
 #[derive(Debug, Clone)]
 pub struct Clause<Meta=()> {
     pub lits: Vec<Lit>,
     pub meta: Meta,
 }
 
-impl Clause {
-    pub fn is_satisfied_by(&self, assign: &Assignment) -> bool {
-        for lit in &self.lits {
-            if lit.is_satisfied_by(assign) {
-                return true;
-            }
-        }
-        return false;
-    }
+pub enum ClauseState {
+    Satisfied,
+    Unsatisfied,
+    Unit(Lit) ,
+    Unresolved
+}
 
-    // ~/~ begin <<rust/viska-sat/src/dpll.typ#cla_unit-literal>>[init]
-    //| id: cla_unit-literal
-    pub fn unit_literal(&self, assign: &Assignment) -> Option<Lit> {
-        let mut candidate: Option<Lit> = None;
+impl Clause {
+    pub fn eval(&self, assign: &Assignment) -> ClauseState {
+        let mut all_unsatisfied = true;
+        let mut unit_lit = None;
         for lit in &self.lits {
-            match assign.values[lit.var_id] {
-                Some(val) if val ^ lit.negated => return None,
-                Some(_) => continue,
-                None => {
-                    if candidate.is_some() {
-                        return None;
+            match lit.eval(assign) {
+                LitState::Satisfied => return ClauseState::Satisfied,
+                LitState::Unassigned => {
+                    all_unsatisfied = false;
+                    if unit_lit.is_some() {
+                        return ClauseState::Unresolved;
                     }
-                    candidate = Some(lit.clone());
+                    unit_lit = Some(lit.clone());
                 }
+                _ => {}
             }
         }
-        candidate
+
+        if all_unsatisfied {
+            ClauseState::Unsatisfied
+        } else if let Some(lit) = unit_lit {
+            ClauseState::Unit(lit)
+        } else {
+            ClauseState::Unresolved
+        }
     }
-    // ~/~ end
 }
 // ~/~ end

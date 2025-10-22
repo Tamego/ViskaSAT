@@ -1,12 +1,12 @@
 // ~/~ begin <<rust/viska-sat/src/dpll.typ#rust/viska-sat/src/dpll.rs>>[init]
 //| file: rust/viska-sat/src/dpll.rs
-use crate::{assignment::Assignment, cnf::Cnf, event_handler::EventHandler, solver::{SatResult, Solver}};
+use crate::{assignment::Assignment, clause::ClauseState, cnf::{Cnf, CnfState}, event_handler::EventHandler, solver::{SatResult, Solver}};
 
 #[derive(Debug)]
 pub enum DpllSolverEvent {
     Decide {idx: usize, assign: bool},
     Propagated {idx: usize, assign: bool, reason: usize},
-    Eval {result: bool},
+    Eval {result: CnfState},
     Backtrack {idx: usize},
     Finish {result: SatResult}
 }
@@ -33,33 +33,57 @@ where
     }
     // ~/~ end
 
+    // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_repeat-unit-propagation>>[init]
+    //| id: dpll_repeat-unit-propagation
+    fn repeat_unit_propagate(
+        &mut self,
+        assign: &mut Assignment,
+        propagated_vars: &mut Vec<usize>
+    ) -> Result<CnfState, H::Error> {
+        'outer: loop {
+            for (clause_id, clause) in self.cnf.clauses.iter().enumerate() {
+                match clause.eval(assign) {
+                    ClauseState::Unit(lit) => {
+                        let idx = lit.var_id;
+                        let val = !lit.negated;
+                        self.handler.handle_event(
+                            DpllSolverEvent::Propagated { idx, assign: val, reason: clause_id }
+                        )?;
+                        assign.values[idx] = Some(val);
+                        propagated_vars.push(idx);
+                        continue 'outer;
+                    }
+                    ClauseState::Unsatisfied => break 'outer,
+                    _ => {}
+                }
+            }
+            break;
+        }
+        Ok(self.cnf.eval(assign))
+    }
+    // ~/~ end
+
     // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_dpll>>[init]
     //| id: dpll_dpll
     fn dpll(&mut self, assign: &mut Assignment) -> Result<SatResult, H::Error> {
-        // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_unit-propagation>>[init]
-        //| id: dpll_unit-propagation
+        let mut ret = SatResult::Unsat;
+        // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_unit-propagation-and-conflict>>[init]
+        //| id: dpll_unit-propagation-and-conflict
         let mut propagated_vars = vec![];
-        while let Some(unit_clause) = self.cnf.collect_unit_clauses(assign).pop() {
-            let propagated_lit = unit_clause.lit;
-            let propagated_var_id = propagated_lit.var_id;
-            let val = !propagated_lit.negated;
-            assign.values[propagated_var_id] = Some(val);
-            self.handler.handle_event(DpllSolverEvent::Propagated { idx: propagated_var_id, assign: val, reason: unit_clause.clause_id })?;
-            propagated_vars.push(propagated_var_id);
-        }
+        if let CnfState::Unsatisfied = self.repeat_unit_propagate(assign, &mut propagated_vars)? {
+            ret = SatResult::Unsat;
+        } 
         // ~/~ end
         // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_eval-with-assignment>>[init]
         //| id: dpll_eval-with-assignment
-        let mut ret = SatResult::Unsat;
-        if assign.is_full() {
-            let is_sat = self.cnf.is_satisfied_by(assign);
-            self.handler.handle_event(DpllSolverEvent::Eval { result: is_sat })?;
-            if is_sat {
-                ret = SatResult::Sat(assign.clone())
-            }
-            else {
-                ret = SatResult::Unsat
-            }
+        else if assign.is_full() {
+            let sat_state = self.cnf.eval(assign);
+            self.handler.handle_event(DpllSolverEvent::Eval { result: sat_state.clone() })?;
+            match sat_state {
+                CnfState::Satisfied => return Ok(SatResult::Sat(assign.clone())),
+                CnfState::Unsatisfied => return Ok(SatResult::Unsat),
+                CnfState::Unresolved => panic!("full assignment cannot be unresolved")
+            };
         }
         // ~/~ end
         // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_decide>>[init]
@@ -81,6 +105,9 @@ where
             }
             assign.values[idx] = None;
         }
+        // ~/~ end
+        // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_return>>[init]
+        //| id: dpll_return
         while let Some(var_id) = propagated_vars.pop() {
             assign.values[var_id] = None;
             self.handler.handle_event(DpllSolverEvent::Backtrack { idx: var_id })?;

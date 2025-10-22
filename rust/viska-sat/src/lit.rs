@@ -8,11 +8,17 @@ pub struct Lit {
     pub negated: bool
 }
 
+pub enum LitState {
+    Satisfied,
+    Unsatisfied,
+    Unassigned
+}
+
 impl Lit {
-    pub fn is_satisfied_by(&self, assign: &Assignment) -> bool {
+    pub fn eval(&self, assign: &Assignment) -> LitState {
         match assign.values[self.var_id] {
-            None => panic!(),
-            Some(val) => val ^ self.negated
+            None => LitState::Unassigned,
+            Some(val) => if val ^ self.negated {LitState::Satisfied} else {LitState::Unsatisfied}
         }
     }
 }

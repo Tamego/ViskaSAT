@@ -1,11 +1,11 @@
 // ~/~ begin <<rust/viska-sat/src/brute_force.typ#rust/viska-sat/src/brute_force.rs>>[init]
 //| file: rust/viska-sat/src/brute_force.rs
-use crate::{assignment::Assignment, cnf::Cnf, event_handler::EventHandler, solver::{SatResult, Solver}};
+use crate::{assignment::Assignment, cnf::{Cnf, CnfState}, event_handler::EventHandler, solver::{SatResult, Solver}};
 
 #[derive(Debug)]
 pub enum BruteForceSolverEvent {
     Decide {idx: usize, assign: bool},
-    Eval {result: bool},
+    Eval {result: CnfState},
     Backtrack {idx: usize},
     Finish {result: SatResult}
 }
@@ -26,14 +26,13 @@ where
         // ~/~ begin <<rust/viska-sat/src/brute_force.typ#brf_base-case>>[init]
         //|id: brf_base-case
         if assign.is_full() {
-            let is_sat = self.cnf.is_satisfied_by(assign);
-            self.handler.handle_event(BruteForceSolverEvent::Eval { result: is_sat })?;
-            if is_sat {
-                return Ok(SatResult::Sat(assign.clone()));
-            }
-            else {
-                return Ok(SatResult::Unsat)
-            }
+            let sat_state = self.cnf.eval(assign);
+            self.handler.handle_event(BruteForceSolverEvent::Eval { result: sat_state.clone() })?;
+            match sat_state {
+                CnfState::Satisfied => return Ok(SatResult::Sat(assign.clone())),
+                CnfState::Unsatisfied => return Ok(SatResult::Unsat),
+                CnfState::Unresolved => panic!("full assignment cannot be unresolved")
+            };
         }
         // ~/~ end
         // ~/~ begin <<rust/viska-sat/src/brute_force.typ#brf_recursive-step>>[init]

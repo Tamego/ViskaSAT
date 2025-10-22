@@ -23,60 +23,9 @@ $
 
 全探索と単位伝播を組み合わせることで、明らかに充足不能な枝の探索を削減できる。
 新たな割り当てを追加するたびに、単位節がなくなるまで単位伝播をすることでこれを実現した。
+また、完全な割り当てでなくとも1つの節が充足不能になってしまえば全体として充足不能となるので、
+この場合もすぐに探索を終了するようにした。
 今回は純リテラル除去については触れないことにする。
-
-=== 単位伝播
-単位伝播を扱えるように、`Clause`, `Cnf` にメソッドを追加する。
-
-単位節であるかどうかを確認し、もしそうなら単位節によって導出されるリテラルを返し、
-そうでなければ何も返さない。
-```rust
-//| id: cla_unit-literal
-pub fn unit_literal(&self, assign: &Assignment) -> Option<Lit> {
-    let mut candidate: Option<Lit> = None;
-    for lit in &self.lits {
-        match assign.values[lit.var_id] {
-            Some(val) if val ^ lit.negated => return None,
-            Some(_) => continue,
-            None => {
-                if candidate.is_some() {
-                    return None;
-                }
-                candidate = Some(lit.clone());
-            }
-        }
-    }
-    candidate
-}
-```
-
-単位節を表す構造体を作る。
-CNFにおける節IDと、その単位節から導出されるリテラルを保持する。
-
-```rust
-//| id: cnf_unit-clause
-pub struct UnitClause {
-    pub clause_id: usize,
-    pub lit: Lit
-}
-```
-
-あとは、各項について単位節かどうかを調べ、もしあるなら `UnitClause` を作る。
-```rust
-//| id: cnf_collect-unit-clauses
-pub fn collect_unit_clauses(&self, assign: &Assignment) -> Vec<UnitClause> {
-    let mut unit_clauses = vec![];
-    for i in 0..self.clauses.len() {
-        if let Some(lit) = self.clauses[i].unit_literal(assign) {
-            unit_clauses.push(UnitClause{
-                clause_id: i,
-                lit
-            });
-        }
-    }
-    return unit_clauses;
-}
-```
 
 === 実装
 全探索ソルバでは `idx` を使ってどこまで割り当てたかを管理していた。
@@ -98,50 +47,80 @@ fn pick_unassigned_var(&self, assign: &Assignment) -> Option<usize> {
 ソルバの構造は以下のようになっている：
 1. 単位伝播を進展が生まれなくなるまで実行する。
   このとき伝播した変数のidをスタックに入れておく。
+  充足不能となるとすぐに中断する。
 2. 割り当てが完全なとき、式を割り当てで評価してその結果を返す。
 3. 未割り当ての変数を選んで真か偽にそれぞれ割り当てて再帰する。
 
 ```rust
 //| id: dpll_dpll
 fn dpll(&mut self, assign: &mut Assignment) -> Result<SatResult, H::Error> {
-    <<dpll_unit-propagation>>
+    let mut ret = SatResult::Unsat;
+    <<dpll_unit-propagation-and-conflict>>
     <<dpll_eval-with-assignment>>
     <<dpll_decide>>
+    <<dpll_return>>
+}
+```
+
+単位伝播を単位節がなくなるもしくは矛盾が発生するまで繰り返す関数を用意する。
+返り値に現在の割り当てで式を評価した結果を返す。
+```rust
+//| id: dpll_repeat-unit-propagation
+fn repeat_unit_propagate(
+    &mut self,
+    assign: &mut Assignment,
+    propagated_vars: &mut Vec<usize>
+) -> Result<CnfState, H::Error> {
+    'outer: loop {
+        for (clause_id, clause) in self.cnf.clauses.iter().enumerate() {
+            match clause.eval(assign) {
+                ClauseState::Unit(lit) => {
+                    let idx = lit.var_id;
+                    let val = !lit.negated;
+                    self.handler.handle_event(
+                        DpllSolverEvent::Propagated { idx, assign: val, reason: clause_id }
+                    )?;
+                    assign.values[idx] = Some(val);
+                    propagated_vars.push(idx);
+                    continue 'outer;
+                }
+                ClauseState::Unsatisfied => break 'outer,
+                _ => {}
+            }
+        }
+        break;
+    }
+    Ok(self.cnf.eval(assign))
 }
 ```
 
 `propagated_vars` に単位伝播された変数を保管する。
-各単位節について、適切に割り当てる。
+`unit_propagate()` で矛盾が発生したなら、充足不能と返す。
 
 ```rust
-//| id: dpll_unit-propagation
+//| id: dpll_unit-propagation-and-conflict
 let mut propagated_vars = vec![];
-while let Some(unit_clause) = self.cnf.collect_unit_clauses(assign).pop() {
-    let propagated_lit = unit_clause.lit;
-    let propagated_var_id = propagated_lit.var_id;
-    let val = !propagated_lit.negated;
-    assign.values[propagated_var_id] = Some(val);
-    self.handler.handle_event(DpllSolverEvent::Propagated { idx: propagated_var_id, assign: val, reason: unit_clause.clause_id })?;
-    propagated_vars.push(propagated_var_id);
-}
+if let CnfState::Unsatisfied = self.repeat_unit_propagate(assign, &mut propagated_vars)? {
+    ret = SatResult::Unsat;
+} 
 ```
 
-ベースケースはほとんど前回と同じ。
+割り当てが完全なとき、式を評価してその結果を返す。
+
 ```rust
 //| id: dpll_eval-with-assignment
-let mut ret = SatResult::Unsat;
-if assign.is_full() {
-    let is_sat = self.cnf.is_satisfied_by(assign);
-    self.handler.handle_event(DpllSolverEvent::Eval { result: is_sat })?;
-    if is_sat {
-        ret = SatResult::Sat(assign.clone())
-    }
-    else {
-        ret = SatResult::Unsat
-    }
+else if assign.is_full() {
+    let sat_state = self.cnf.eval(assign);
+    self.handler.handle_event(DpllSolverEvent::Eval { result: sat_state.clone() })?;
+    match sat_state {
+        CnfState::Satisfied => return Ok(SatResult::Sat(assign.clone())),
+        CnfState::Unsatisfied => return Ok(SatResult::Unsat),
+        CnfState::Unresolved => panic!("full assignment cannot be unresolved")
+    };
 }
 ```
 
+式が未解決のときは、全探索のときと同じように変数を決定する。
 `idx` の扱いが全探索の場合とは異なっているが、だいたい同じことをしている。
 ```rust
 //| id: dpll_decide
@@ -152,6 +131,7 @@ else {
         assign.values[idx] = Some(choice);
         let result = self.dpll(assign)?;
         self.handler.handle_event(DpllSolverEvent::Backtrack { idx })?;
+        assign.values[idx] = None;
         match result {
             sat @ SatResult::Sat(_) => {
                 ret = sat;
@@ -160,8 +140,12 @@ else {
             SatResult::Unsat => {}
         }
     }
-    assign.values[idx] = None;
 }
+```
+
+最後に結果を返す。
+```rust
+//| id: dpll_return
 while let Some(var_id) = propagated_vars.pop() {
     assign.values[var_id] = None;
     self.handler.handle_event(DpllSolverEvent::Backtrack { idx: var_id })?;
@@ -171,13 +155,13 @@ return Ok(ret);
 
 ```rust
 //| file: rust/viska-sat/src/dpll.rs
-use crate::{assignment::Assignment, cnf::Cnf, event_handler::EventHandler, solver::{SatResult, Solver}};
+use crate::{assignment::Assignment, clause::ClauseState, cnf::{Cnf, CnfState}, event_handler::EventHandler, solver::{SatResult, Solver}};
 
 #[derive(Debug)]
 pub enum DpllSolverEvent {
     Decide {idx: usize, assign: bool},
     Propagated {idx: usize, assign: bool, reason: usize},
-    Eval {result: bool},
+    Eval {result: CnfState},
     Backtrack {idx: usize},
     Finish {result: SatResult}
 }
@@ -193,6 +177,8 @@ where
     H: EventHandler<Event = DpllSolverEvent>
 {
     <<dpll_pick-unassigned-var>>
+
+    <<dpll_repeat-unit-propagation>>
 
     <<dpll_dpll>>
 }
