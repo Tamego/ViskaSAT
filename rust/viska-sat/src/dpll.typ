@@ -101,6 +101,7 @@ fn repeat_unit_propagate(
 //| id: dpll_unit-propagation-and-conflict
 let mut propagated_vars = vec![];
 if let CnfState::Unsatisfied = self.repeat_unit_propagate(assign, &mut propagated_vars)? {
+    self.handler.handle_event(DpllSolverEvent::Eval { result: CnfState::Unsatisfied })?;
     ret = SatResult::Unsat;
 } 
 ```
@@ -131,7 +132,6 @@ else {
         assign.values[idx] = Some(choice);
         let result = self.dpll(assign)?;
         self.handler.handle_event(DpllSolverEvent::Backtrack { idx })?;
-        assign.values[idx] = None;
         match result {
             sat @ SatResult::Sat(_) => {
                 ret = sat;
@@ -140,6 +140,7 @@ else {
             SatResult::Unsat => {}
         }
     }
+    assign.values[idx] = None;
 }
 ```
 

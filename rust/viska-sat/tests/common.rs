@@ -74,6 +74,37 @@ where
                 ], meta: () },
             ],
         },
+        Cnf {
+            num_vars: 7,
+            clauses: vec![
+                Clause { lits: vec![
+                    Lit { var_id: 0, negated: true },
+                    Lit { var_id: 1, negated: false },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 2, negated: true },
+                    Lit { var_id: 4, negated: false },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 3, negated: true },
+                    Lit { var_id: 4, negated: false },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 5, negated: true },
+                    Lit { var_id: 6, negated: true },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 0, negated: true },
+                    Lit { var_id: 4, negated: true },
+                    Lit { var_id: 5, negated: false },
+                ], meta: () },
+                Clause { lits: vec![
+                    Lit { var_id: 1, negated: true },
+                    Lit { var_id: 4, negated: true },
+                    Lit { var_id: 6, negated: false },
+                ], meta: () },
+            ],
+        }
     ];
     // ~/~ end
     let cnf = sample_cnfs[test_num].clone();
