@@ -5,8 +5,9 @@ use crate::{assignment::Assignment, clause::ClauseState, cnf::{Cnf, CnfState}, e
 #[derive(Debug)]
 pub enum DpllSolverEvent {
     Decide {idx: usize, assign: bool},
-    Propagated {idx: usize, assign: bool, reason: usize},
+    Propagate {idx: usize, assign: bool, reason: usize},
     Eval {result: CnfState},
+    Conflict {reason: usize},
     Backtrack {idx: usize},
     Finish {result: SatResult}
 }
@@ -39,7 +40,7 @@ where
         &mut self,
         assign: &mut Assignment,
         propagated_vars: &mut Vec<usize>
-    ) -> Result<CnfState, H::Error> {
+    ) -> Result<Option<usize>, H::Error> {
         'outer: loop {
             for (clause_id, clause) in self.cnf.clauses.iter().enumerate() {
                 match clause.eval(assign) {
@@ -47,19 +48,19 @@ where
                         let idx = lit.var_id;
                         let val = !lit.negated;
                         self.handler.handle_event(
-                            DpllSolverEvent::Propagated { idx, assign: val, reason: clause_id }
+                            DpllSolverEvent::Propagate { idx, assign: val, reason: clause_id }
                         )?;
                         assign.values[idx] = Some(val);
                         propagated_vars.push(idx);
                         continue 'outer;
                     }
-                    ClauseState::Unsatisfied => break 'outer,
+                    ClauseState::Unsatisfied => return Ok(Some(clause_id)),
                     _ => {}
                 }
             }
             break;
         }
-        Ok(self.cnf.eval(assign))
+        Ok(None)
     }
     // ~/~ end
 
@@ -70,8 +71,8 @@ where
         // ~/~ begin <<rust/viska-sat/src/dpll.typ#dpll_unit-propagation-and-conflict>>[init]
         //| id: dpll_unit-propagation-and-conflict
         let mut propagated_vars = vec![];
-        if let CnfState::Unsatisfied = self.repeat_unit_propagate(assign, &mut propagated_vars)? {
-            self.handler.handle_event(DpllSolverEvent::Eval { result: CnfState::Unsatisfied })?;
+        if let Some(clause_id) = self.repeat_unit_propagate(assign, &mut propagated_vars)? {
+            self.handler.handle_event(DpllSolverEvent::Conflict { reason: clause_id })?;
             ret = SatResult::Unsat;
         } 
         // ~/~ end
@@ -130,7 +131,7 @@ where
     fn solve(&mut self) -> Result<SatResult, Self::Error> {
         let result = self.dpll(&mut Assignment { values: vec![None; self.cnf.num_vars]})?;
         self.handler.handle_event(DpllSolverEvent::Finish { result: result.clone() })?;
-        Ok(SatResult::Unsat)
+        Ok(result)
     }
 }
 // ~/~ end

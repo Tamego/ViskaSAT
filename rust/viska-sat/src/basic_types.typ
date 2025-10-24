@@ -43,7 +43,7 @@ impl Assignment {
 //| file: rust/viska-sat/src/lit.rs
 use crate::assignment::Assignment;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, Hash, PartialEq)]
 pub struct Lit {
     pub var_id: usize,
     pub negated: bool

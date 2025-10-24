@@ -180,3 +180,18 @@ fn dpll_with_logging() {
     }
 }
 ```
+
+=== `SimpleCdclSolver`
+```rust
+//| file: rust/viska-sat/tests/simple_cdcl_solver.rs
+mod common;
+use common::solve_with_logging;
+use viska_sat::simple_cdcl::SimpleCdclSolver;
+
+#[test]
+fn dpll_with_logging() {
+    for i in 0..=1 {
+        solve_with_logging(|cnf, handler| SimpleCdclSolver{ cnf, handler }, i);
+    }
+}
+```
