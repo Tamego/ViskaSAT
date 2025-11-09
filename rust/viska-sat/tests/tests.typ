@@ -189,7 +189,7 @@ use common::solve_with_logging;
 use viska_sat::simple_cdcl::SimpleCdclSolver;
 
 #[test]
-fn dpll_with_logging() {
+fn simple_cdcl_with_logging() {
     for i in 0..=1 {
         solve_with_logging(|cnf, handler| SimpleCdclSolver{ cnf, handler }, i);
     }

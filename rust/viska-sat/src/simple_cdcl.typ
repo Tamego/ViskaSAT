@@ -303,7 +303,7 @@ Trail を先頭から見ていく。
 今の学習節の中に含まれているリテラルを見つけるまで探す。
 ```rust
 //| id: scdac_choose-literal
-let mut last_assigned_lit = loop {
+let last_assigned_lit = loop {
     let lit = trail.trail[trail_pos].lit.clone();
     if let Some(_) = presence[lit.var_id] {
         break lit;
@@ -315,25 +315,25 @@ let mut last_assigned_lit = loop {
 そのリテラルを単位伝播によって導くこととなった理由の節と今の学習節を合わせて解消する。
 ```rust
 //| id: scdac_resolve
-let reason_clause_id = match &trail.trail[trail_pos].reason {
+let reason_clause_id = match trail.trail[trail_pos].reason {
     AssignmentReason::UnitPropagation { clause_id } => {clause_id},
     AssignmentReason::Decision => panic!("conflict clause should not select a decision literal at this stage")
 };
-self.handler.handle_event(
-    SimpleCdclSolverEvent::Resolve {
-        lit: last_assigned_lit.clone(),
-        reason_clause_id: *reason_clause_id,
-        learnt_clause: learnt_clause.clone()
-})?;
 self.resolve(
     trail,
-    last_assigned_lit,
-    &self.cnf.clauses[*reason_clause_id],
+    last_assigned_lit.clone(),
+    &self.cnf.clauses[reason_clause_id],
     &mut learnt_clause,
     &mut presence,
     &mut backtrack_level,
     &mut current_level_lits
 );
+self.handler.handle_event(
+    SimpleCdclSolverEvent::Resolve {
+        lit: last_assigned_lit,
+        reason_clause_id,
+        learnt_clause: learnt_clause.clone()
+})?;
 ```
 
 そして最後にループを抜けて得られた学習節を式に追加し、バックトラックすべき決定レベルを返す。
@@ -360,13 +360,13 @@ Ok((
 //| id: scdre_remove-lit
 let resolve_lit_var_id = resolve_lit.var_id;
 let resolve_lit_id = presence[resolve_lit_var_id].expect("resolve literal must exist in the learnt clause");
-current_level_lits.remove(&resolve_lit);
+current_level_lits.remove(&resolve_lit.inv());
 conflict_clause.lits.swap_remove(resolve_lit_id);
 presence[resolve_lit_var_id] = None;
 if resolve_lit_id < conflict_clause.lits.len() {
     let swaped_lit = &conflict_clause.lits[resolve_lit_id];
     presence[swaped_lit.var_id] = Some(resolve_lit_id);
-}
+};
 ```
 
 理由節のリテラルでまだ矛盾節の方に加わっていないものだけ加える。

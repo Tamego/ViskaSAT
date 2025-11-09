@@ -56,6 +56,13 @@ pub enum LitState {
 }
 
 impl Lit {
+    pub fn inv(&self) -> Lit {
+        Lit {
+            var_id: self.var_id,
+            negated: !self.negated
+        }
+    }
+
     pub fn eval(&self, assign: &Assignment) -> LitState {
         match assign.values[self.var_id] {
             None => LitState::Unassigned,
