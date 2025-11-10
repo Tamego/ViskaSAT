@@ -13,3 +13,18 @@ config_version=5
 config/name="godot"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[gui]
+
+theme/default_theme_scale=2.5
+
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.9372549, 0.94509804, 0.9607843, 1)

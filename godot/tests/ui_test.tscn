@@ -1,0 +1,134 @@
+[gd_scene load_steps=6 format=3 uid="uid://dla8omrfe5emh"]
+
+[ext_resource type="Theme" uid="uid://xh6qswx853rs" path="res://themes/my_theme.tres" id="1_cpmuu"]
+[ext_resource type="FontFile" uid="uid://o1ba7w7kdn50" path="res://fonts/LeagueSpartan-VariableFont_wght.ttf" id="1_mc74l"]
+[ext_resource type="Texture2D" uid="uid://kckfe3y0f7el" path="res://textures/sample.png" id="2_tlb0e"]
+
+[sub_resource type="FontVariation" id="FontVariation_mc74l"]
+base_font = ExtResource("1_mc74l")
+variation_opentype = {
+2003265652: 900
+}
+variation_transform = Transform2D(1, 0.15, 0, 1, 0, 0)
+spacing_glyph = -2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mc74l"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+bg_color = Color(0.34117648, 0.7176471, 0.78039217, 1)
+expand_margin_left = 17.0
+
+[node name="UITest" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_cpmuu")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_left = -6.000002
+offset_top = 79.0
+offset_right = -6.0
+offset_bottom = 253.0
+grow_horizontal = 2
+rotation = -0.1308997
+theme_override_colors/font_color = Color(0.9372549, 0.94509804, 0.9607843, 1)
+theme_override_constants/line_spacing = -4
+theme_override_fonts/font = SubResource("FontVariation_mc74l")
+theme_override_font_sizes/font_size = 90
+theme_override_styles/normal = SubResource("StyleBoxFlat_mc74l")
+text = "ViskaSAT
+  Visualizer"
+vertical_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_tlb0e")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 194.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="TabContainer" type="TabContainer" parent="MarginContainer"]
+layout_mode = 2
+tab_alignment = 2
+current_tab = 2
+
+[node name="全探索" type="VBoxContainer" parent="MarginContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="DPLL" type="VBoxContainer" parent="MarginContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="CDCL" type="VSplitContainer" parent="MarginContainer/TabContainer"]
+layout_mode = 2
+split_offset = 128
+metadata/_tab_index = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/TabContainer/CDCL"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/CDCL/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Graph"
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/TabContainer/CDCL/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSplitContainer" type="HSplitContainer" parent="MarginContainer/TabContainer/CDCL"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/TabContainer/CDCL/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/CDCL/HSplitContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "State"
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/TabContainer/CDCL/HSplitContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="MarginContainer/TabContainer/CDCL/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/CDCL/HSplitContainer/VBoxContainer3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Input"
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/TabContainer/CDCL/HSplitContainer/VBoxContainer3"]
+layout_mode = 2
+size_flags_vertical = 3
