@@ -23,6 +23,7 @@
 #include "../rust/viska-sat/src/simple_cdcl.typ"
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
+#include "../rust/godot-rust/src/force_directed_graph.typ"
 = テスト
 #include "../rust/godot-rust/src/tests.typ"
 #include "../rust/godot-rust/src/tests/thread_channel_communication.typ"
@@ -30,3 +31,4 @@
 #include "../rust/godot-rust/src/tests/solver_communicator.typ"
 #include "../rust/godot-rust/src/tests/solver_runner.typ"
 #include "../rust/viska-sat/tests/tests.typ"
+#include "../rust/godot-rust/src/tests/force_directed_graph.typ"

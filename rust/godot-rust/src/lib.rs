@@ -7,6 +7,7 @@ use godot::prelude::*;
 // ~/~ begin <<rust/godot-rust/src/lib.typ#grl_modules>>[init]
 //| id: grl_modules
 mod tests;
+mod force_directed_graph;
 // ~/~ end
 
 // ~/~ begin <<rust/godot-rust/src/lib.typ#grl_gdextension-entry-point>>[init]

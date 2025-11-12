@@ -21,9 +21,14 @@ window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/force_directed_graph/plugin.cfg")
+
 [gui]
 
 theme/default_theme_scale=2.5
+theme/custom="uid://xh6qswx853rs"
 
 [rendering]
 

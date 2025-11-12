@@ -4,5 +4,5 @@ godot/.godot/
 godot/.import/
 rust/proofs/lean/extraction/.lake/
 .entangled/
-
 typst/poster*
+godot/example

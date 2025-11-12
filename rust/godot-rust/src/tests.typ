@@ -6,4 +6,5 @@ pub mod thread_channel_communication;
 pub mod solver_trait;
 pub mod solver_communicator;
 pub mod solver_runner;
+pub mod force_directed_graph;
 ```
