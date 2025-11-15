@@ -2,12 +2,12 @@
 //| file: rust/viska-sat/tests/dpll_solver.rs
 mod common;
 use common::solve_with_logging;
-use viska_sat::dpll::DpllSolver;
+use viska_sat::{dpll::DpllSolver, solver::Solver};
 
 #[test]
 fn dpll_with_logging() {
     for i in 0..=1 {
-        solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler }, i);
+        solve_with_logging(DpllSolver::make_solver, i);
     }
 }
 // ~/~ end

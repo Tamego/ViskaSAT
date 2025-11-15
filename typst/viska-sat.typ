@@ -24,6 +24,7 @@
 = Godot
 #include "../rust/godot-rust/src/lib.typ"
 #include "../rust/godot-rust/src/force_directed_graph.typ"
+#include "../rust/godot-rust/src/dashboard.typ"
 = テスト
 #include "../rust/godot-rust/src/tests.typ"
 #include "../rust/godot-rust/src/tests/thread_channel_communication.typ"

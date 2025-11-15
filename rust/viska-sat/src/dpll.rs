@@ -133,5 +133,9 @@ where
         self.handler.handle_event(DpllSolverEvent::Finish { result: result.clone() })?;
         Ok(result)
     }
+
+    fn make_solver(cnf: Cnf, handler: H) -> Self {
+        DpllSolver { cnf, handler }
+    }
 }
 // ~/~ end

@@ -129,6 +129,11 @@ where
 {
     <<sotds_associated-types>>
     <<sotds_solve>>
+    fn make_solver(_cnf: Cnf, handler: Self::Handler) -> Self {
+        DummySolver {
+            handler
+        }
+    }
 }
 ```
 
@@ -175,7 +180,8 @@ fn ready(&mut self) {
 ```rust
 //| file: rust/godot-rust/src/tests/solver_trait.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
+use viska_sat::cnf::Cnf;
 <<sot_modules>>
 <<sot_error-type>>
 <<sot_test-handler>>

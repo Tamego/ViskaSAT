@@ -7,6 +7,6 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-godot = "0.2.4"
+godot = { version = "0.4.2", features = ["experimental-threads"]}
 viska-sat = { path = "../viska-sat" }
 

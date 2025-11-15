@@ -1,7 +1,8 @@
 // ~/~ begin <<rust/godot-rust/src/tests/solver_communicator.typ#rust/godot-rust/src/tests/solver_communicator.rs>>[init]
 //| file: rust/godot-rust/src/tests/solver_communicator.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
+use viska_sat::cnf::Cnf;
 // ~/~ begin <<rust/godot-rust/src/tests/solver_communicator.typ#soc_modules>>[init]
 //| id: soc_modules
 use viska_sat::{solver::{Solver, SatResult}, event_handler::EventHandler, solver_communicator::{SolverCommunicator, SolverControl, SolverCommunicatorError}};
@@ -86,6 +87,11 @@ where
         Ok(SatResult::Unsat)
     }
     // ~/~ end
+    fn make_solver(_cnf: Cnf, handler: Self::Handler) -> Self {
+        DummySolver {
+            handler
+        }
+    }
 }
 // ~/~ end
 

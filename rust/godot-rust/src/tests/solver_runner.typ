@@ -41,7 +41,8 @@ fn process(&mut self, _delta: f64) {
 ```rust
 //| file: rust/godot-rust/src/tests/solver_runner.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
+use viska_sat::cnf::Cnf;
 <<sort_modules>>
 <<soc_dummy-solver>>
 

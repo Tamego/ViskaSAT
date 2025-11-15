@@ -110,7 +110,7 @@ impl<S> SolverRunner<S>
 where
     S: Solver + Send,
     S::Event: Send + 'static,
-    S::Error: Debug + Send + 'static
+    S::Error: Send + 'static
 {
     <<sorr_start-solver>>
     <<sorr_try-recv-event>>

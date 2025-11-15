@@ -157,12 +157,12 @@ use std::time::{Duration, Instant};
 //| file: rust/viska-sat/tests/brute_force_solver.rs
 mod common;
 use common::solve_with_logging;
-use viska_sat::brute_force::BruteForceSolver;
+use viska_sat::{brute_force::BruteForceSolver, solver::Solver};
 
 #[test]
 fn brute_force_solver_with_logging() {
     for i in 0..=1 {
-        solve_with_logging(|cnf, handler| BruteForceSolver{ cnf, handler }, i);
+        solve_with_logging(BruteForceSolver::make_solver, i);
     }
 }
 ```
@@ -171,12 +171,12 @@ fn brute_force_solver_with_logging() {
 //| file: rust/viska-sat/tests/dpll_solver.rs
 mod common;
 use common::solve_with_logging;
-use viska_sat::dpll::DpllSolver;
+use viska_sat::{dpll::DpllSolver, solver::Solver};
 
 #[test]
 fn dpll_with_logging() {
     for i in 0..=1 {
-        solve_with_logging(|cnf, handler| DpllSolver{ cnf, handler }, i);
+        solve_with_logging(DpllSolver::make_solver, i);
     }
 }
 ```
@@ -186,12 +186,12 @@ fn dpll_with_logging() {
 //| file: rust/viska-sat/tests/simple_cdcl_solver.rs
 mod common;
 use common::solve_with_logging;
-use viska_sat::simple_cdcl::SimpleCdclSolver;
+use viska_sat::{simple_cdcl::SimpleCdclSolver, solver::Solver};
 
 #[test]
 fn simple_cdcl_with_logging() {
     for i in 0..=1 {
-        solve_with_logging(|cnf, handler| SimpleCdclSolver{ cnf, handler }, i);
+        solve_with_logging(SimpleCdclSolver::make_solver, i);
     }
 }
 ```

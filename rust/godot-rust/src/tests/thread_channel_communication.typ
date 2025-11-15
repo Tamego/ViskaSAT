@@ -115,7 +115,7 @@ fn process(&mut self, _delta: f64) {
 ```rust
 //| file: rust/godot-rust/src/tests/thread_channel_communication.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
 <<tcc_modules>>
 
 #[derive(GodotClass)]

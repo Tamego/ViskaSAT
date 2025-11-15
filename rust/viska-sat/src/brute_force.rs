@@ -71,5 +71,9 @@ where
         self.handler.handle_event(BruteForceSolverEvent::Finish { result: result.clone() })?;
         Ok(result)
     }
+
+    fn make_solver(cnf: Cnf, handler: H) -> Self {
+        BruteForceSolver { cnf, handler }
+    }
 }
 // ~/~ end

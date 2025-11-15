@@ -80,7 +80,7 @@ impl<S> SolverRunner<S>
 where
     S: Solver + Send,
     S::Event: Send + 'static,
-    S::Error: Debug + Send + 'static
+    S::Error: Send + 'static
 {
     // ~/~ begin <<rust/viska-sat/src/solver_runner.typ#sorr_start-solver>>[init]
     //| id: sorr_start-solver

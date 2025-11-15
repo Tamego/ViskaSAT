@@ -1,7 +1,8 @@
 // ~/~ begin <<rust/godot-rust/src/tests/solver_trait.typ#rust/godot-rust/src/tests/solver_trait.rs>>[init]
 //| file: rust/godot-rust/src/tests/solver_trait.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
+use viska_sat::cnf::Cnf;
 // ~/~ begin <<rust/godot-rust/src/tests/solver_trait.typ#sot_modules>>[init]
 //| id: sot_modules
 use viska_sat::{solver::{Solver, SatResult}, event_handler::EventHandler};
@@ -104,6 +105,11 @@ where
         Ok(SatResult::Unsat)
     }
     // ~/~ end
+    fn make_solver(_cnf: Cnf, handler: Self::Handler) -> Self {
+        DummySolver {
+            handler
+        }
+    }
 }
 // ~/~ end
 

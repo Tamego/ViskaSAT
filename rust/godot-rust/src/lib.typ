@@ -13,6 +13,7 @@ use godot::prelude::*;
 //| id: grl_modules
 mod tests;
 mod force_directed_graph;
+mod dashboard;
 ```
 
 空の構造体 `ViskaSATExtension` を作って、

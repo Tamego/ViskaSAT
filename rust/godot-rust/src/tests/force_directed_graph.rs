@@ -20,8 +20,7 @@ impl INode2D for ForcedDirectedGraphTest {
     // ~/~ begin <<rust/godot-rust/src/tests/force_directed_graph.typ#fdgt_init>>[init]
     //| id: fdgt_init
     fn ready(&mut self) {
-        let mut binding = self.base_mut();
-        let mut fdg_wrapper = FdgWrapper::new(binding.upcast_mut::<Node2D>());
+        let mut fdg_wrapper = FdgWrapper::new(&mut self.base_mut());
         fdg_wrapper.add_node(0, "Test1".into());
         fdg_wrapper.add_node(1, "Test2".into());
         fdg_wrapper.add_node(2, "Test3".into());

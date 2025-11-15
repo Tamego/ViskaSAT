@@ -29,7 +29,7 @@ impl FdgWrapper {
         // ~/~ begin <<rust/godot-rust/src/force_directed_graph.typ#fdgw_init-graph-node>>[init]
         //| id: fdgw_init-graph-node
         let mut fdg_graph_node = Node2D::new_alloc();
-        fdg_graph_node.set_script(&fdg_graph_script.to_variant());
+        fdg_graph_node.set_script(&fdg_graph_script);
         parent.add_child(&fdg_graph_node);
         // ~/~ end
 
@@ -47,7 +47,7 @@ impl FdgWrapper {
     //| id: fdgw_add-node
     pub fn add_node(&mut self, id: usize, label_text: GString) {
         let mut fdg_node = Node2D::new_alloc();
-        fdg_node.set_script(&self.fdg_node_script.to_variant());
+        fdg_node.set_script(&self.fdg_node_script);
         fdg_node.set("draw_point", &true.to_variant());
         fdg_node.set("point_color", &Color::from_html("ccd0da").unwrap().to_variant());
         // fdg_node.set("min_distance", &51.to_variant());
@@ -77,7 +77,7 @@ impl FdgWrapper {
     //| id: fdgw_add-edge
     pub fn add_edge(&mut self, start: usize, end: usize) {
         let mut fdg_node = Line2D::new_alloc();
-        fdg_node.set_script(&self.fdg_spring_script.to_variant());
+        fdg_node.set_script(&self.fdg_spring_script);
         fdg_node.set("node_start", &self.fdg_nodes[&start].to_variant());
         fdg_node.set("node_end", &self.fdg_nodes[&end].to_variant());
         fdg_node.set("length", &300.to_variant());

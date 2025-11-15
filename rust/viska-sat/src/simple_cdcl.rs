@@ -324,5 +324,9 @@ where
         self.handler.handle_event(SimpleCdclSolverEvent::Finish { result: result.clone() })?;
         Ok(result)
     }
+
+    fn make_solver(cnf: Cnf, handler: H) -> Self {
+        SimpleCdclSolver { cnf, handler }
+    }
 }
 // ~/~ end

@@ -1,7 +1,7 @@
 // ~/~ begin <<rust/godot-rust/src/tests/thread_channel_communication.typ#rust/godot-rust/src/tests/thread_channel_communication.rs>>[init]
 //| file: rust/godot-rust/src/tests/thread_channel_communication.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
 // ~/~ begin <<rust/godot-rust/src/tests/thread_channel_communication.typ#tcc_modules>>[init]
 //| id: tcc_modules
 use std::thread;

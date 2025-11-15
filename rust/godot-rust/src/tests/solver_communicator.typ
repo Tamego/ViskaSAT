@@ -108,6 +108,11 @@ where
 {
     <<socds_associated-types>>
     <<socds_solve>>
+    fn make_solver(_cnf: Cnf, handler: Self::Handler) -> Self {
+        DummySolver {
+            handler
+        }
+    }
 }
 ```
 
@@ -159,7 +164,8 @@ fn process(&mut self, _delta: f64) {
 ```rust
 //| file: rust/godot-rust/src/tests/solver_communicator.rs
 use godot::prelude::*;
-use godot::classes::{Control, IControl};
+use godot::classes::{Control, IControl, Input};
+use viska_sat::cnf::Cnf;
 <<soc_modules>>
 <<soc_test-handler>>
 <<soc_dummy-solver>>

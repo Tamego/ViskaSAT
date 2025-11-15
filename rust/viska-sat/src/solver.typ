@@ -23,13 +23,15 @@ pub trait Solver {
     type Handler: EventHandler<Event = Self::Event, Error = Self::Error>;
 
     fn solve(&mut self) -> Result<SatResult, Self::Error>;
+
+    fn make_solver(cnf: Cnf, handler: Self::Handler) -> Self;
 }
 ```
 
 
 ```rust
 //| file: rust/viska-sat/src/solver.rs
-use crate::{assignment::Assignment, event_handler::EventHandler};
+use crate::{assignment::Assignment, cnf::Cnf, event_handler::EventHandler};
 <<sol_solver-result>>
 <<sol_solver-trait>>
 ```
